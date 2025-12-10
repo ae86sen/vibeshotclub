@@ -46,7 +46,6 @@ button {
 /* Utilities */
 .container {
   max-width: 1600px;
-  /* Wider container for gallery */
   margin: 0 auto;
   padding: 0 2rem;
 }

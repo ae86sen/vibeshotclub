@@ -1,6 +1,8 @@
-import React from 'react';
+interface VideoBackgroundProps {
+  videoSrc: string;
+}
 
-const VideoBackground = ({ videoSrc }) => {
+const VideoBackground = ({ videoSrc }: VideoBackgroundProps) => {
   return (
     <div className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden">
       {/* Subtle gradient overlay: transparent at top, darkening at bottom for text readability */}
@@ -16,7 +18,6 @@ const VideoBackground = ({ videoSrc }) => {
         <source src={videoSrc} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      {/* Fallback/Loading State could go here */}
     </div>
   );
 };
