@@ -90,7 +90,9 @@ const GalleryGrid = ({ featured, limit = 20 }: GalleryGridProps) => {
     setCurrentImageIndex((prev) => (prev - 1 + modalImages.length) % modalImages.length);
   };
 
-  // Loading skeleton
+  // Loading skeleton - fixed heights to avoid hydration mismatch
+  const skeletonHeights = [280, 350, 240, 320, 300, 260];
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-32 px-4">
@@ -98,11 +100,11 @@ const GalleryGrid = ({ featured, limit = 20 }: GalleryGridProps) => {
           Featured Works
         </div>
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {[...Array(6)].map((_, i) => (
+          {skeletonHeights.map((height, i) => (
             <Skeleton
               key={i}
               className="break-inside-avoid rounded-2xl"
-              style={{ height: `${200 + Math.random() * 200}px` }}
+              style={{ height: `${height}px` }}
             />
           ))}
         </div>
