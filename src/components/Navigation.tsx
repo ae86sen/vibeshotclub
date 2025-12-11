@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const Navigation = () => {
   const pathname = usePathname();
@@ -9,11 +11,12 @@ const Navigation = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 py-6 px-8 transition-all duration-500 ${
+      className={cn(
+        'fixed top-0 left-0 w-full z-50 py-6 px-8 transition-all duration-500',
         isHome
           ? 'bg-transparent'
           : 'bg-black/60 backdrop-blur-md border-b border-white/5'
-      }`}
+      )}
     >
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         <Link
@@ -26,25 +29,31 @@ const Navigation = () => {
         <div className="flex gap-8 items-center">
           <Link
             href="/"
-            className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            className={cn(
+              'text-sm font-medium transition-colors',
+              pathname === '/' ? 'text-white' : 'text-muted-foreground hover:text-white'
+            )}
           >
             Home
           </Link>
           <Link
             href="/gallery"
-            className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            className={cn(
+              'text-sm font-medium transition-colors',
+              pathname === '/gallery' ? 'text-white' : 'text-muted-foreground hover:text-white'
+            )}
           >
             Gallery
           </Link>
           <a
             href="#"
-            className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
           >
             About
           </a>
-          <button className="px-5 py-2 text-xs font-semibold bg-white text-black rounded-full hover:bg-gray-200 transition-colors">
+          <Button size="sm" className="rounded-full">
             Join Community
-          </button>
+          </Button>
         </div>
       </div>
     </nav>

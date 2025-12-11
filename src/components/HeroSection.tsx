@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const HeroSection = () => {
   return (
@@ -21,7 +22,7 @@ const HeroSection = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="text-lg md:text-xl text-gray-200 mb-12 max-w-xl font-light tracking-wide drop-shadow-md"
+        className="text-lg md:text-xl text-muted-foreground mb-12 max-w-xl font-light tracking-wide drop-shadow-md"
       >
         Exploring the boundaries of AI photography and visual storytelling.
       </motion.p>
@@ -31,13 +32,17 @@ const HeroSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Link
-          href="/gallery"
-          className="group flex items-center gap-3 px-8 py-3 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/30 rounded-full transition-all duration-500 text-white font-medium tracking-wide hover:border-white/60 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-md border-white/30 hover:border-white/60 text-white font-medium tracking-wide hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-500"
         >
-          Enter Gallery
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-        </Link>
+          <Link href="/gallery" className="flex items-center gap-3">
+            Enter Gallery
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+          </Link>
+        </Button>
       </motion.div>
     </div>
   );
