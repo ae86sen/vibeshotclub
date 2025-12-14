@@ -1,16 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, X, Check, ChevronLeft, ChevronRight } from 'lucide-react';
-import { usePrompts } from '@/hooks/usePrompts';
-import { useTags, useTagTypes } from '@/hooks/useTags';
-import type { PromptWithTags, Tag } from '@/types/database';
+import { motion } from 'framer-motion';
+import { Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import type { PromptWithTags } from '@/types/database';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -21,50 +18,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 interface GalleryGridProps {
-  featured?: boolean;
-  limit?: number;
+  prompts: PromptWithTags[];
+  isLoading: boolean;
 }
 
-const GalleryGrid = ({ featured, limit = 20 }: GalleryGridProps) => {
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [activeTagType, setActiveTagType] = useState<string>('all');
+const GalleryGrid = ({ prompts, isLoading }: GalleryGridProps) => {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithTags | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [copied, setCopied] = useState(false);
-
-  const { prompts, isLoading } = usePrompts({
-    limit,
-    tag: selectedTags[0] || undefined,
-    featured,
-  });
-  const { tags, tagsByType } = useTags();
-  const { tagTypes } = useTagTypes();
-
-  // Filter prompts by selected tags (multi-select)
-  const filteredPrompts = useMemo(() => {
-    if (selectedTags.length === 0) return prompts;
-    return prompts.filter((prompt) =>
-      selectedTags.some((tagId) =>
-        prompt.tags.some((t) => t.id === tagId)
-      )
-    );
-  }, [prompts, selectedTags]);
-
-  // Get tags for current tab
-  const currentTags = useMemo(() => {
-    if (activeTagType === 'all') return tags;
-    return tagsByType?.[activeTagType] || [];
-  }, [activeTagType, tags, tagsByType]);
-
-  const toggleTag = (tagId: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
-    );
-  };
-
-  const clearTags = () => setSelectedTags([]);
 
   const copyPrompt = async () => {
     if (!selectedPrompt) return;
@@ -95,11 +56,8 @@ const GalleryGrid = ({ featured, limit = 20 }: GalleryGridProps) => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-32 px-4">
-        <div className="text-4xl md:text-5xl font-bold mb-16 text-center tracking-tight">
-          Featured Works
-        </div>
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="p-4 lg:p-8">
+        <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
           {skeletonHeights.map((height, i) => (
             <Skeleton
               key={i}
@@ -113,96 +71,26 @@ const GalleryGrid = ({ featured, limit = 20 }: GalleryGridProps) => {
   }
 
   return (
-    <div className="container mx-auto py-32 px-4">
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl md:text-5xl font-bold mb-8 text-center tracking-tight"
-      >
-        Featured Works
-      </motion.h2>
-
-      {/* Tag Filter with Tabs */}
-      {tags.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-12"
-        >
-          {/* Tag Type Tabs */}
-          <Tabs value={activeTagType} onValueChange={setActiveTagType} className="w-full mb-6">
-            <TabsList className="flex flex-wrap justify-center bg-transparent gap-1">
-              <TabsTrigger
-                value="all"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                All
-              </TabsTrigger>
-              {tagTypes.map((type) => (
-                <TabsTrigger
-                  key={type.id}
-                  value={type.slug}
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  {type.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-
-          {/* Tags */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {selectedTags.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearTags}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Clear ({selectedTags.length})
-              </Button>
-            )}
-            {currentTags.map((tag) => (
-              <Badge
-                key={tag.id}
-                variant={selectedTags.includes(tag.id) ? 'default' : 'outline'}
-                className={cn(
-                  'cursor-pointer transition-all hover:scale-105',
-                  selectedTags.includes(tag.id)
-                    ? 'ring-2 ring-offset-2 ring-offset-background'
-                    : 'opacity-80 hover:opacity-100'
-                )}
-                style={{
-                  backgroundColor: selectedTags.includes(tag.id) ? tag.color : 'transparent',
-                  borderColor: tag.color,
-                  color: selectedTags.includes(tag.id) ? '#fff' : tag.color,
-                  // @ts-expect-error CSS variable
-                  '--tw-ring-color': tag.color,
-                }}
-                onClick={() => toggleTag(tag.id)}
-              >
-                {tag.name}
-              </Badge>
-            ))}
-          </div>
-        </motion.div>
-      )}
+    <div className="p-4 lg:p-8">
+      {/* Results count */}
+      <div className="mb-6 text-sm text-muted-foreground">
+        Showing {prompts.length} prompts
+      </div>
 
       {/* Gallery Grid */}
-      {filteredPrompts.length === 0 ? (
+      {prompts.length === 0 ? (
         <div className="text-center text-muted-foreground py-16">
-          暂无作品
+          No prompts found
         </div>
       ) : (
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-          {filteredPrompts.map((prompt, index) => (
+        <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
+          {prompts.map((prompt, index) => (
             <motion.div
               key={prompt.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6, delay: index * 0.05 }}
+              transition={{ duration: 0.6, delay: index * 0.03 }}
               className="group relative break-inside-avoid rounded-2xl overflow-hidden cursor-pointer bg-card"
               onClick={() => {
                 setSelectedPrompt(prompt);

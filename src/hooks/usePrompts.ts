@@ -9,16 +9,20 @@ interface UsePromptsOptions {
   page?: number
   limit?: number
   tag?: string
+  tags?: string[]
+  search?: string
   featured?: boolean
 }
 
 export function usePrompts(options: UsePromptsOptions = {}) {
-  const { page = 1, limit = 20, tag, featured } = options
+  const { page = 1, limit = 20, tag, tags, search, featured } = options
 
   const params = new URLSearchParams()
   params.set('page', String(page))
   params.set('limit', String(limit))
   if (tag) params.set('tag', tag)
+  if (tags && tags.length > 0) params.set('tags', tags.join(','))
+  if (search) params.set('search', search)
   if (featured) params.set('featured', 'true')
 
   const { data, error, isLoading, mutate } = useSWR(

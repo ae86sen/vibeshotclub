@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const tagId = searchParams.get('tag')
     const featured = searchParams.get('featured')
+    const search = searchParams.get('search')?.trim()
 
     // Build query - only published prompts
     let query = supabase
@@ -33,6 +34,13 @@ export async function GET(request: NextRequest) {
     // Filters
     if (featured === 'true') {
       query = query.eq('is_featured', true)
+    }
+
+    // Search filter - search in title, description, prompt_text
+    if (search) {
+      query = query.or(
+        `title.ilike.%${search}%,description.ilike.%${search}%,prompt_text.ilike.%${search}%`
+      )
     }
 
     // Pagination
